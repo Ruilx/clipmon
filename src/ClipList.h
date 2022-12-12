@@ -57,10 +57,10 @@ public:
 		this->setupPopupMenu();
 
 
-		QPixmap pixmap(100, 100);
+		QPixmap pixmap(64, 64);
 		pixmap.fill(Qt::gray);
 		Utils::drawIconPlaceholder(&pixmap);
-		QListWidgetItem *item = new QListWidgetItem(tr("MIAO"), this, 0);
+		QListWidgetItem *item = new QListWidgetItem(tr("MIAO\n2nd MIAO\n3rd MIAO\n4th Miao"), this, 0);
 		item->setIcon(QIcon(pixmap));
 
 		item = new QListWidgetItem(tr("MIAO2"), this, 0);
@@ -70,6 +70,9 @@ public:
 			qDebug() << "CurrentRowChanged";
 		});
 	}
+
+signals:
+	void itemSelected();
 };
 
 #endif // CLIPLIST_H

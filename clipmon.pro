@@ -17,8 +17,9 @@ SOURCES += \
 	src/Preview.cpp \
 	src/Tray.cpp \
 	src/Utils.cpp \
-	src\main.cpp \
-	src\MainWindow.cpp
+        src/ClipListItem.cpp \
+        src/main.cpp \
+        src/MainWindow.cpp
 
 HEADERS += \
 	src/ClipHelper.h \
@@ -28,8 +29,9 @@ HEADERS += \
 	src/Preview.h \
 	src/Tray.h \
 	src/Utils.h \
-	src\Global.h \
-	src\MainWindow.h
+        src/ClipListItem.h \
+        src/Global.h \
+        src/MainWindow.h
 
 TRANSLATIONS += \
 	i18n\clipmon_en_US.ts
