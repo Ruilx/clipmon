@@ -4,6 +4,12 @@
 #include <QListWidgetItem>
 #include <src/ClipMimeData.h>
 
+#include <QRect>
+#include <QPixmap>
+#include <QImage>
+#include <QPainter>
+#include <QTextItem>
+
 class QListWidget;
 class ClipListItem : public QListWidgetItem
 {
@@ -16,13 +22,27 @@ public:
 		if(data == nullptr){
 			return;
 		}
-		this->setIcon(QIcon());
+		QPixmap pixmap(64, 64);
+		pixmap.fill(Qt::white);
+		Utils::drawIconPlaceholder(&pixmap, QPen(Qt::black));
+		this->setIcon(QIcon(pixmap));
 		this->setClipMimeData(data);
 
 	}
 
 	void setClipMimeData(const ClipMimeData *data){
 		this->data = data;
+		if(this->data->hasImage()){
+			QImage image = qvariant_cast<QImage>(this->data->imageData());
+			image = image.scaled(QSize(64, 64), Qt::KeepAspectRatioByExpanding);
+			image = image.copy(qAbs(image.width() - 64) / 2, qAbs(image.height() - 64) / 2, 64, 64);
+			this->setIcon(QIcon(QPixmap::fromImage(image)));
+		}else if(this->data->hasText()){
+			QPixmap pixmap(64, 64);
+			QPainter p(&pixmap);
+			p.drawText(QRect(0, 0, 64, 64), Qt::AlignLeft, this->data->text());
+
+		}
 	}
 };
 
