@@ -42,9 +42,8 @@ public:
 		return false;
 	}
 
-	static void drawIconPlaceholder(QPixmap *pixmap){
+	static void drawIconPlaceholder(QPixmap *pixmap, const QPen &pen = QPen(Qt::white)){
 		QRect rect = QRect(QPoint(0, 0), pixmap->size() - QSize(1, 1));
-		QPen pen(Qt::white);
 		QPainter painter(pixmap);
 		painter.setPen(pen);
 		painter.drawRect(rect);

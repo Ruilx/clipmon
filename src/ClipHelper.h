@@ -6,6 +6,7 @@
 
 #include <src/Clipboard.h>
 #include <src/ClipList.h>
+#include <src/ClipListItem.h>
 #include <src/ClipMimeData.h>
 
 class ClipHelper : public QObject
@@ -15,21 +16,30 @@ class ClipHelper : public QObject
 	bool enable = true;
 
 	int historySize = 55;
-	QList<ClipMimeData> clipDataList;
+	QList<ClipListItem *> clipDataList;
+
+	ClipList *list = nullptr;
 
 	Clipboard *clipboard = new Clipboard(this);
 public:
-	explicit ClipHelper(QObject *parent = nullptr) : QObject(parent){
+	explicit ClipHelper(const ClipList *list, QObject *parent = nullptr) : QObject(parent){
+		Q_ASSERT_X(list != nullptr, __FUNCTION__, "Cliplist is nullptr");
+		this->list = list;
 		this->connect(this->clipboard, &Clipboard::copied, [this](const ClipMimeData &data){
 			if(this->enable){
 				qDebug() << "Helper catch copied!";
-				this->clipDataList.prepend(data);
+				ClipListItem *item = new ClipListItem(new ClipMimeData(data), this);
+				this->clipDataList.prepend(item);
+				this->list->addItem(item);
 				if(this->clipDataList.length() >= this->historySize){
-					this->clipDataList.removeLast();
+					ClipListItem *i = this->clipDataList.takeLast();
+					this->list->removeItemWidget(i);
 				}
 				qDebug() << this->clipDataList.length();
 			}
 		});
+
+		this->connect(this->list, &ClipList)
 
 		this->connect(this->clipboard, &Clipboard::modeChanged, [this](QClipboard::Mode mode){
 			emit clipboardModeChanged(mode);

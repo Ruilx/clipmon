@@ -1,8 +1,11 @@
 #ifndef CLIPLIST_H
 #define CLIPLIST_H
 
+#include <QApplication>
 #include <QListWidget>
+#include <QListWidgetItem>
 #include <QContextMenuEvent>
+#include <QMessageBox>
 
 
 #include <QPixmap>
@@ -24,6 +27,13 @@ class ClipList : public QListWidget
 	void setupPopupMenu(){
 		this->menu->addAction(tr("&Copy to clipboard"), [this](){
 			qDebug() << "Popup Menu: Copy to clipboard";
+			QListWidgetItem *item = this->currentItem();
+			if(item == nullptr){
+				QWidget *parentOrSelf = this->parentWidget() == nullptr ? this : this->parentWidget();
+				QMessageBox::critical(parentOrSelf, QApplication::applicationDisplayName(), tr("Not selected yet."), QMessageBox::Ok);
+				return;
+			}
+			emit this->copy(this->currentItem());
 		});
 
 		this->menu->addAction(tr("&Show descriptions"), [this](){
@@ -73,6 +83,9 @@ public:
 
 signals:
 	void itemSelected();
+	void copy(const QListWidgetItem *item);
+	void remove(const QListWidgetItem *item);
+	void desc(const QListWidgetItem *item);
 };
 
 #endif // CLIPLIST_H
