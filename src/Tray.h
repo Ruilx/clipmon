@@ -69,17 +69,9 @@ public:
 		});
 	}
 
-	void setVisible(bool enable){
-		this->tray->setVisible(enable);
-	}
-
-	void show(){
-		this->tray->show();
-	}
-
-	void hide(){
-		this->tray->hide();
-	}
+	inline void setVisible(bool enable){ this->tray->setVisible(enable); }
+	inline void show(){ this->tray->show(); }
+	inline void hide(){ this->tray->hide(); }
 
 public slots:
 	void showMessage(const QString &title, const QString &message, QSystemTrayIcon::MessageIcon icon = QSystemTrayIcon::Information, int timeout = 5000){

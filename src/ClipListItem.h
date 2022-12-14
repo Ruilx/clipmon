@@ -4,6 +4,7 @@
 #include <QListWidgetItem>
 
 #include <QPainter>
+#include <QUrl>
 
 #include <src/Global.h>
 #include <src/ClipMimeData.h>
@@ -14,14 +15,13 @@ class ClipListItem : public QListWidgetItem
 {
 	Q_OBJECT
 
-	const ClipMimeData *data;
+	ClipMimeData data;
 public:
-	ClipListItem(int type = Type): QListWidgetItem(nullptr, type){}
-	ClipListItem(const ClipMimeData *data, int type = Type): QListWidgetItem(nullptr, type){
-		if(data == nullptr){
-			this->setDefaultIcon();
-			return;
-		}
+	ClipListItem(int type = Type): QListWidgetItem(nullptr, type){
+		this->setDefaultIcon();
+	}
+	ClipListItem(const ClipMimeData &data, int type = Type): QListWidgetItem(nullptr, type){
+		this->setClipMimeData(data);
 	}
 
 	void setDefaultIcon(){
@@ -45,15 +45,23 @@ public:
 		this->setIcon(pixmap);
 	}
 
-	void setClipMimeData(const ClipMimeData *data){
-		if(data == nullptr){
-			return;
+	void setToIcon(const QList<QUrl> &urls){
+		QPixmap pixmap(IconSize);
+		QStringList list;
+		for(const QUrl &url: urls){
+			list.append(url.toString());
 		}
+		QPainter p(&pixmap);
+		p.drawText(QPoint(0, 0), list.join('\n'));
+		p.end();
+	}
+
+	void setClipMimeData(const ClipMimeData &data){
 		this->data = data;
 		QPixmap pixmap(IconSize);
 		pixmap.fill(Qt::white);
-		if(this->data->hasImage()){
-
+		if(this->data.hasImage()){
+			this->setToIcon(this->data.imageData());
 		}
 
 	}

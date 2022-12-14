@@ -11,6 +11,7 @@ DEFINES *= QT_USE_QSTRINGBUILDER
 
 SOURCES += \
 	src/ClipHelper.cpp \
+	src/ClipHelper.cpp \
 	src/ClipList.cpp \
 	src/ClipMimeData.cpp \
 	src/Clipboard.cpp \
@@ -22,6 +23,7 @@ SOURCES += \
         src/MainWindow.cpp
 
 HEADERS += \
+	src/ClipHelper.h \
 	src/ClipHelper.h \
 	src/ClipList.h \
 	src/ClipMimeData.h \
