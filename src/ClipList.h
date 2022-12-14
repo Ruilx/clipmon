@@ -69,7 +69,7 @@ public:
 	}
 
 signals:
-	void itemSelected(const ClipListItem *item)
+	void itemSelected(const ClipListItem *item);
 	void copyToClipboard(const ClipListItem *item);
 	void remove(const ClipListItem *item);
 

@@ -61,7 +61,10 @@ signals:
 
 public slots:
 	void setData(const ClipMimeData &data){
-		this->clipboard->setMimeData(&data, this->mode);
+		ClipMimeData *d = new ClipMimeData(data);
+		// Sets the clipboard data to src.
+		// Ownership if the data is transferred to the clipboard.
+		this->clipboard->setMimeData(d, this->mode);
 	}
 
 };

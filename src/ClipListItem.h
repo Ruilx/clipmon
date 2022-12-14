@@ -63,7 +63,10 @@ public:
 		if(this->data.hasImage()){
 			this->setToIcon(this->data.imageData());
 		}
+	}
 
+	const ClipMimeData* const getClipMimeData() const{
+		return &this->data;
 	}
 };
 
