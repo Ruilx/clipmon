@@ -16,6 +16,7 @@ SOURCES += \
 	src/ClipMimeData.cpp \
 	src/Clipboard.cpp \
 	src/Preview.cpp \
+	src/PreviewScene.cpp \
 	src/Tray.cpp \
 	src/Utils.cpp \
         src/ClipListItem.cpp \
@@ -29,6 +30,7 @@ HEADERS += \
 	src/ClipMimeData.h \
 	src/Clipboard.h \
 	src/Preview.h \
+	src/PreviewScene.h \
 	src/Tray.h \
 	src/Utils.h \
         src/ClipListItem.h \
