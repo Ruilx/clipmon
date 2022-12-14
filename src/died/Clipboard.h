@@ -25,10 +25,18 @@ public:
 			qDebug() << "Copied!";
 			emit this->copied(this->getClipData());
 		});
+
+		ClipMimeData data = this->getClipData();
+		if(data.isValid()){
+			emit this->copied(data);
+		}
 	}
 
 	ClipMimeData getClipData(){
 		const QMimeData *data = this->clipboard->mimeData(this->mode);
+		if(data == nullptr){
+			return ClipMimeData();
+		}
 		return ClipMimeData(*data);
 	}
 

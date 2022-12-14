@@ -1,3 +1,3 @@
-#include "cliplistitem.h"
+#include "ClipListItem.h"
 
 

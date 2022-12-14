@@ -22,13 +22,13 @@ class ClipHelper : public QObject
 
 	Clipboard *clipboard = new Clipboard(this);
 public:
-	explicit ClipHelper(const ClipList *list, QObject *parent = nullptr) : QObject(parent){
+	explicit ClipHelper(ClipList *list, QObject *parent = nullptr) : QObject(parent){
 		Q_ASSERT_X(list != nullptr, __FUNCTION__, "Cliplist is nullptr");
 		this->list = list;
 		this->connect(this->clipboard, &Clipboard::copied, [this](const ClipMimeData &data){
 			if(this->enable){
 				qDebug() << "Helper catch copied!";
-				ClipListItem *item = new ClipListItem(new ClipMimeData(data), this);
+				ClipListItem *item = new ClipListItem(&data);
 				this->clipDataList.prepend(item);
 				this->list->addItem(item);
 				if(this->clipDataList.length() >= this->historySize){
@@ -39,11 +39,15 @@ public:
 			}
 		});
 
-		this->connect(this->list, &ClipList)
+		this->connect(this->list, &ClipList::copy, [this](const QListWidgetItem *item){
+
+		});
 
 		this->connect(this->clipboard, &Clipboard::modeChanged, [this](QClipboard::Mode mode){
 			emit clipboardModeChanged(mode);
 		});
+
+
 	}
 
 	int getHistorySize() const{

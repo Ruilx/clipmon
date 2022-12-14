@@ -3,18 +3,20 @@
 
 #include <QApplication>
 #include <QListWidget>
+#include <QListWidgetItem>
 #include <QContextMenuEvent>
 #include <QMessageBox>
-#include <QMenu>
+
 
 #include <QPixmap>
+#include <QBrush>
 #include <QIcon>
+
+#include <QMenu>
 
 #include <QDebug>
 
-#include <src/ClipListItem.h>
 #include <src/Utils.h>
-#include <src/Global.h>
 
 class ClipList : public QListWidget
 {
@@ -31,7 +33,7 @@ class ClipList : public QListWidget
 				QMessageBox::critical(parentOrSelf, QApplication::applicationDisplayName(), tr("Not selected yet."), QMessageBox::Ok);
 				return;
 			}
-			emit this->copyToClipboard(this->currentItem());
+			emit this->copy(this->currentItem());
 		});
 
 		this->menu->addAction(tr("&Show descriptions"), [this](){
@@ -59,20 +61,21 @@ public:
 		this->setMinimumWidth(250);
 		this->setMovement(QListWidget::Static);
 		this->setSpacing(2);
-		this->setIconSize(IconSize);
+
+		this->setIconSize(QSize(64, 64));
 
 		this->setupPopupMenu();
 
-		this->connect(this, &ClipList::currentItemChanged, [this](QListWidgetItem *item, QListWidgetItem *old){
-			qDebug() << "ClipList: CurrentItemChanged";
+		this->connect(this, &ClipList::currentRowChanged, [this](int currentRow){
+			qDebug() << "CurrentRowChanged";
 		});
 	}
 
 signals:
-	void itemSelected(const ClipListItem *item)
-	void copyToClipboard(const ClipListItem *item);
-	void remove(const ClipListItem *item);
-
+	void itemSelected();
+	void copy(const QListWidgetItem *item);
+	void remove(const QListWidgetItem *item);
+	void desc(const QListWidgetItem *item);
 };
 
 #endif // CLIPLIST_H

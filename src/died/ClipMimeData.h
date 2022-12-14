@@ -10,8 +10,10 @@
 class ClipMimeData : public QMimeData
 {
 	Q_OBJECT
+
+	bool valid = false;
 public:
-	ClipMimeData(): QMimeData(){}
+	ClipMimeData(): QMimeData(), valid(false){}
 
 	ClipMimeData(const QMimeData &other): QMimeData(){
 		this->setMimeData(other);
@@ -28,12 +30,19 @@ public:
 				this->setData(format, mimeData.data(format));
 			}
 		}
+		if(!formats.isEmpty()){
+			this->valid = true;
+		}
 	}
 
 	ClipMimeData &operator =(const ClipMimeData &other){
 		this->clear();
 		this->setMimeData(other);
 		return *this;
+	}
+
+	bool isValid() const{
+		return this->valid;
 	}
 };
 

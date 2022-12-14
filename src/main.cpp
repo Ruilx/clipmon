@@ -8,8 +8,8 @@
 int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
-	a.setApplicationDisplayName(QObject::tr("Clipboard Monitor"));
-	a.setApplicationName("clipbrd");
+	a.setApplicationDisplayName(QObject::tr(ApplicationDisplayName));
+	a.setApplicationName(ApplicationName);
 	a.setApplicationVersion(VERSION_STR);
 
 
