@@ -33,7 +33,7 @@ public:
 		this->setTransformationAnchor(QGraphicsView::AnchorViewCenter);
 		this->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
 
-		this->setInteractive(true);
+		this->setInteractive(false);
 
 		this->setScene(this->scene);
 	}

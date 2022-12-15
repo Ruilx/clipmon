@@ -15,11 +15,13 @@ SOURCES += \
 	src/ClipList.cpp \
 	src/ClipMimeData.cpp \
 	src/Clipboard.cpp \
+    src/ItemBase.cpp \
 	src/Preview.cpp \
 	src/PreviewScene.cpp \
 	src/Tray.cpp \
 	src/Utils.cpp \
         src/ClipListItem.cpp \
+    src/item/TextItem.cpp \
         src/main.cpp \
         src/MainWindow.cpp
 
@@ -29,13 +31,15 @@ HEADERS += \
 	src/ClipList.h \
 	src/ClipMimeData.h \
 	src/Clipboard.h \
+    src/ItemBase.h \
 	src/Preview.h \
 	src/PreviewScene.h \
 	src/Tray.h \
 	src/Utils.h \
         src/ClipListItem.h \
         src/Global.h \
-        src/MainWindow.h
+        src/MainWindow.h \
+    src/item/TextItem.h
 
 TRANSLATIONS += \
 	i18n\clipmon_en_US.ts

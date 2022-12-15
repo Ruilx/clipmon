@@ -25,8 +25,8 @@ class ClipHelper : public QObject
 
 public:
 	explicit ClipHelper(ClipList *clipList, Preview *preview, QObject *parent = nullptr): QObject(parent){
-		Q_ASSERT_X(list != nullptr, __FUNCTION__, "Cliplist is nullptr");
-		this->list = list;
+		Q_ASSERT_X(clipList != nullptr, __FUNCTION__, "Cliplist is nullptr");
+		this->clipList = clipList;
 
 		Q_ASSERT_X(preview != nullptr, __FUNCTION__, "Preview is nullptr");
 		this->preview = preview;

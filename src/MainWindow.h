@@ -17,13 +17,10 @@
 
 #include <src/ClipList.h>
 #include <src/Preview.h>
-#include <src/ClipHelper.h>
 
 class MainWindow : public QMainWindow
 {
 	Q_OBJECT
-
-	ClipHelper *clipHelper = new ClipHelper(this);
 
 	ClipList *clipList = new ClipList(this);
 	Preview *preview = new Preview(this);
@@ -164,10 +161,10 @@ class MainWindow : public QMainWindow
 
 		QMenu *aboutMenu = new QMenu(tr("&About"));{
 			aboutMenu->addAction(tr("&About"), [this](){
-
+				qDebug() << "about";
 			});
 
-			aboutMenu->addAction(tr("About &Qt..."), [this](){
+			aboutMenu->addAction(tr("About &Qt..."), [](){
 				qApp->aboutQt();
 			});
 			this->menuBar()->addMenu(aboutMenu);
