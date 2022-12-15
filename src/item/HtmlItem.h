@@ -1,5 +1,5 @@
-#ifndef TEXTITEM_H
-#define TEXTITEM_H
+#ifndef HTMLITEM_H
+#define HTMLITEM_H
 
 #include <src/ItemBase.h>
 
@@ -7,7 +7,7 @@
 
 #include <QTextDocument>
 
-class TextItem : public ItemBase
+class HtmlItem : public ItemBase
 {
 	QGraphicsTextItem *item = new QGraphicsTextItem(this);
 	QString text;
@@ -17,7 +17,7 @@ class TextItem : public ItemBase
 	}
 
 public:
-	TextItem(const QString &text, const QString &mimeString = QString(), QGraphicsItem *parent = nullptr): ItemBase(QObject::tr("[Text] %1").arg(mimeString), parent){
+	HtmlItem(const QString &text, const QString &mimeString = QString(), QGraphicsItem *parent = nullptr): itemBase(QObject::tr("[HTML] %1").arg(mimeString), parent){
 		this->text = text;
 		this->mimeString = mimeString;
 		QTextDocument *doc = this->item->document();
@@ -31,8 +31,6 @@ public:
 		font.setPointSize(12);
 		this->item->setFont(font);
 	}
-
-
 };
 
-#endif // TEXTITEM_H
+#endif // HTMLITEM_H

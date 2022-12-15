@@ -21,6 +21,8 @@ SOURCES += \
 	src/Tray.cpp \
 	src/Utils.cpp \
         src/ClipListItem.cpp \
+	src/item/HtmlItem.cpp \
+	src/item/ImageItem.cpp \
     src/item/TextItem.cpp \
         src/main.cpp \
         src/MainWindow.cpp
@@ -39,6 +41,8 @@ HEADERS += \
         src/ClipListItem.h \
         src/Global.h \
         src/MainWindow.h \
+	src/item/HtmlItem.h \
+	src/item/ImageItem.h \
     src/item/TextItem.h
 
 TRANSLATIONS += \

@@ -8,15 +8,19 @@
 
 #include <QFont>
 
+class ClipMimeData;
 class ItemBase : public QGraphicsItem
 {
 	QGraphicsSimpleTextItem *title = new QGraphicsSimpleTextItem(this);
 
+	QString mimeString;
 protected:
 	int height = 25;
 	int padding = 5;
 
 	const int maxWidth = 640;
+
+	virtual const ClipMimeData toClipMimeData() = 0;
 
 public:
 	ItemBase(const QString &title, QGraphicsItem *parent = nullptr): QGraphicsItem(parent){
@@ -41,10 +45,6 @@ public:
 	QString getTitle() const{
 		return this->title->text();
 	}
-
-protected:
-	virtual void renderDesc() = 0;
-
 };
 
 #endif // ITEMBASE_H
