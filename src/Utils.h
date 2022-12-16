@@ -91,6 +91,19 @@ public:
 		}
 		return "Unknown Format";
 	}
+
+	static QString formatNumber(qreal size){
+		static const char* table[] = {"B", "KB", "MB", "GB", "TB", "EB"};
+		static const int maxIndex = 6;
+		static const int unit = 1024;
+		int index = 0;
+
+		while(index < maxIndex && size >= unit){
+			size /= unit;
+			index ++;
+		}
+		return QString::number(size, 'g', 2) % QString(table[index]);
+	}
 };
 
 #endif // UTILS_H

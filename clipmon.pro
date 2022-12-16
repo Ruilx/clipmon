@@ -23,6 +23,7 @@ SOURCES += \
         src/ClipListItem.cpp \
 	src/item/HtmlItem.cpp \
 	src/item/ImageItem.cpp \
+    src/item/OtherItem.cpp \
     src/item/TextItem.cpp \
         src/main.cpp \
         src/MainWindow.cpp
@@ -43,6 +44,7 @@ HEADERS += \
         src/MainWindow.h \
 	src/item/HtmlItem.h \
 	src/item/ImageItem.h \
+    src/item/OtherItem.h \
     src/item/TextItem.h
 
 TRANSLATIONS += \

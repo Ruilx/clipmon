@@ -11,10 +11,11 @@
 class ClipMimeData;
 class ItemBase : public QGraphicsItem
 {
+protected:
 	QGraphicsSimpleTextItem *title = new QGraphicsSimpleTextItem(this);
 
 	QString mimeString;
-protected:
+
 	int height = 25;
 	int padding = 5;
 

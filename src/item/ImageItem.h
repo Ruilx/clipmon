@@ -29,10 +29,10 @@ public:
 		this->image = image;
 		this->mimeString = mimeString;
 		QPixmap transformed;
-		if(pixmap.width() > this->maxWidth){
+		if(image.width() > this->maxWidth){
 			transformed = QPixmap::fromImage(image.scaledToWidth(this->maxWidth));
 		}else{
-			transformed = QPixmap::fromImage(pixmap);
+			transformed = QPixmap::fromImage(image);
 		}
 		if(transformed.height() > this->maxWidth * 2.25){
 			transformed = transformed.copy(0, 0, transformed.width(), this->maxWidth * 2.25);

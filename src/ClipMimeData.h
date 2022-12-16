@@ -6,6 +6,7 @@
 class ClipMimeData : public QMimeData
 {
 	bool valid = false;
+	QString id;
 public:
 	ClipMimeData(): QMimeData(){}
 
@@ -23,7 +24,7 @@ public:
 				this->setData(format, mimeData.data(format));
 			}
 		}
-		if(!formats.isEmpty()){
+		if(!mimeData.formats().isEmpty()){
 			this->valid = true;
 		}
 	}
@@ -32,6 +33,14 @@ public:
 		this->clear();
 		this->setMimeData(other);
 		return *this;
+	}
+
+	void setId(const QString &id){
+		this->id = id;
+	}
+
+	QString getId() const{
+		return this->id;
 	}
 
 	inline bool isValid() const{ return this->valid; }
