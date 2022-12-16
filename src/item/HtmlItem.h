@@ -17,7 +17,7 @@ class HtmlItem : public ItemBase
 	}
 
 public:
-	HtmlItem(const QString &text, const QString &mimeString = QString(), QGraphicsItem *parent = nullptr): itemBase(QObject::tr("[HTML] %1").arg(mimeString), parent){
+	HtmlItem(const QString &text, const QString &mimeString = QString(), QGraphicsItem *parent = nullptr): ItemBase{QObject::tr("[HTML] %1").arg(mimeString), parent}{
 		this->text = text;
 		this->mimeString = mimeString;
 		QTextDocument *doc = this->item->document();
