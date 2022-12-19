@@ -3,19 +3,26 @@
 
 #include <src/ItemBase.h>
 
+#include <src/ClipMimeData.h>
 #include <src/Utils.h>
 
 class OtherItem : public ItemBase
 {
-	qint64 size = 0;
+	QByteArray data;
 
 	QRectF boundingRect() const override{
 		return QRectF(0, 0, this->maxWidth, this->height);
 	}
 
+	const ClipMimeData toClipMimeData() override{
+		ClipMimeData mimeData;
+		mimeData.setData(this->mimeString, this->data);
+		return mimeData;
+	}
+
 public:
-	OtherItem(qint64 size, const QString &mimeString, QGraphicsItem *parent = nullptr): ItemBase{
-		QObject::tr("[Binary] %1 Size: %2").arg(mimeString, Utils::formatNumber(size)), parent}, size{size}{
+	OtherItem(const QByteArray &data, const QString &mimeString, QGraphicsItem *parent = nullptr): ItemBase{
+		QObject::tr("[Binary] %1 Size: %2").arg(mimeString, Utils::formatNumber(data.length())), parent}, data{data}{
 	}
 };
 

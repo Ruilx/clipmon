@@ -11,6 +11,7 @@
 #include <QPixmap>
 #include <QImage>
 
+#include <src/ClipMimeData.h>
 #include <src/Utils.h>
 
 class ImageItem : public ItemBase
@@ -20,6 +21,12 @@ class ImageItem : public ItemBase
 
 	QRectF boundingRect() const override{
 		return QRectF(0, 0, this->maxWidth, this->height + this->padding + this->item->boundingRect().height());
+	}
+
+	const ClipMimeData toClipMimeData() override{
+		ClipMimeData mimeData;
+		mimeData.setImageData(this->image);
+		return mimeData;
 	}
 
 public:

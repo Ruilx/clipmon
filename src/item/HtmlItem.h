@@ -7,6 +7,8 @@
 
 #include <QTextDocument>
 
+#include <src/ClipMimeData.h>
+
 class HtmlItem : public ItemBase
 {
 	QGraphicsTextItem *item = new QGraphicsTextItem(this);
@@ -14,6 +16,12 @@ class HtmlItem : public ItemBase
 
 	QRectF boundingRect() const override{
 		return QRectF(0, 0, this->maxWidth, this->height + this->padding + this->item->boundingRect().height());
+	}
+
+	const ClipMimeData toClipMimeData() override{
+		ClipMimeData mimeData;
+		mimeData.setHtml(this->text);
+		return mimeData;
 	}
 
 public:

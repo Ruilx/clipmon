@@ -12,12 +12,13 @@
 #include <QDebug>
 
 #include <src/Utils.h>
+#include <src/MainWindow.h>
 
 class Tray : public QObject
 {
 	Q_OBJECT
 
-	QMainWindow *mainWindow = nullptr;
+	MainWindow *mainWindow = nullptr;
 
 	QMenu *menu = new QMenu(this->mainWindow);
 	QSystemTrayIcon *tray = new QSystemTrayIcon(this);
@@ -63,6 +64,8 @@ public:
 		this->connect(this->tray, &QSystemTrayIcon::messageClicked, [this](){
 			qDebug() << "Tray: message click";
 		});
+
+		this->connect(this->mainWindow, &MainWindow::showTrayMessage, this, &Tray::showMessage);
 
 		QTimer::singleShot(1000, [this](){
 			this->tray->showMessage(tr("Start Monitoring..."), tr("Clipboard is now under monitoring."), QSystemTrayIcon::Information, 5000);

@@ -17,6 +17,8 @@ class Preview : public QGraphicsView
 
 	void wheelEvent(QWheelEvent *event) override;
 
+	void resizeEvent(QResizeEvent *event) override;
+
 	QGraphicsScene *scene = new QGraphicsScene(this);
 public:
 	Preview(QWidget *parent = nullptr): QGraphicsView(parent){

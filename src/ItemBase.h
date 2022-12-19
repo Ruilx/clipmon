@@ -46,6 +46,10 @@ public:
 	QString getTitle() const{
 		return this->title->text();
 	}
+
+	const ClipMimeData getClipMimeData(){
+		return this->toClipMimeData();
+	}
 };
 
 #endif // ITEMBASE_H

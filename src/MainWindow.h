@@ -11,12 +11,14 @@
 #include <QAction>
 #include <QInputDialog>
 #include <QMessageBox>
+#include <QSystemTrayIcon>
 
 #include <QDebug>
 
-
+#include <src/ClipHelper.h>
 #include <src/ClipList.h>
 #include <src/Preview.h>
+#include <src/PreviewScene.h>
 
 class MainWindow : public QMainWindow
 {
@@ -24,6 +26,12 @@ class MainWindow : public QMainWindow
 
 	ClipList *clipList = new ClipList(this);
 	Preview *preview = new Preview(this);
+
+	ClipHelper *helper = new ClipHelper(this->clipList, this->preview, this);
+
+	// Can be singleton
+	PreviewScene *scenes = new PreviewScene(this);
+	QGraphicsScene *errorScene = new QGraphicsScene(this);
 
 	QDockWidget *previewWidget = new QDockWidget(tr("Preview"), this);
 
@@ -44,148 +52,82 @@ class MainWindow : public QMainWindow
 		}
 	}
 
-	void setupWindow(){
-		this->resize(800, 600);
-		this->setCentralWidget(clipList);
+	void setupWindow();
+	void setupMenus();
 
-		this->setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
-		this->setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
-		this->setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea);
-		this->setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
-
-		this->previewWidget->setWidget(this->preview);
-		this->previewWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-		this->previewWidget->setFeatures(QDockWidget::DockWidgetMovable);
-		this->connect(this->previewWidget, &QDockWidget::visibilityChanged, [this](bool visible){
-			this->showPreviewWindowAction->setChecked(visible);
-		});
-
-		this->addDockWidget(Qt::RightDockWidgetArea, this->previewWidget);
-
-		this->setWindowTitle("");
+	void setupErrorScene(){
+		QFont font = QApplication::font();
+		font.setPointSize(32);
+		this->errorScene->addText(tr("Cannot display description."), font);
 	}
 
-	void setupMenus(){
-		QMenu *fileMenu = new QMenu(tr("&File"));{
-			fileMenu->addAction(tr("&Open"), [this](){
-
-			});
-
-			fileMenu->addAction(tr("&Save"), [this](){
-
-			});
-
-			fileMenu->addAction(tr("&Exit"), [this](){
-				qApp->exit();
-			});
-
-			this->menuBar()->addMenu(fileMenu);
-		}
-
-		QMenu *editMenu = new QMenu(tr("&Edit"));{
-			this->underMonitoringAction->setCheckable(true);
-			this->underMonitoringAction->setChecked(this->clipHelper->getEnable());
-			this->connect(this->underMonitoringAction, &QAction::triggered, [this](bool checked){
-				this->clipHelper->setEnable(checked);
-				if(!checked){
-					this->setWindowTitle(tr("Monitoring Stopped"));
-				}else{
-					this->setWindowTitle("");
-				}
-			});
-			editMenu->addAction(this->underMonitoringAction);
-
-			editMenu->addAction(tr("&Clear History"), [this](){
-				if(this->clipHelper->getHistoryCount() <= 0){
+	void setupClipList(){
+		// 列表中选择
+		this->connect(this->clipList, &ClipList::itemSelected, [this](const ClipListItem *item){
+			if(this->preview->isVisible()){
+				if(item == nullptr){
+					qDebug() << "Cliplist::ItemSelected Slot:" << "ClipListItem *item is nullptr";
 					return;
 				}
-				int answer = QMessageBox::question(this, QApplication::applicationDisplayName(),
-													tr("This will clear all data, all history will be clean.\n"
-													   "You can save the list before resize history data.\n"
-													   "Proceed?"), QMessageBox::Yes, QMessageBox::Cancel);
-				if(answer != QMessageBox::Yes){
+				const ClipMimeData *data = item->getClipMimeData();
+				if(data == nullptr){
+					qDebug() << "Cliplist::ItemSelected Slot:" << "ClipMimeData *data is nullptr";
 					return;
 				}
-				this->clipHelper->clear();
-				this->statusBar()->showMessage(tr("History cleared."));
-			});
-
-			editMenu->addAction(tr("&Set History size..."), [this](){
-				bool ok = false;
-				int historySize = this->clipHelper->getHistorySize();
-				int newHistorySize = QInputDialog::getInt(this, QApplication::applicationDisplayName(),
-														  tr("Please input max history size..."),
-														  historySize,
-														  1, 5000, 1, &ok);
-				if (!ok){
-					return;
+				QGraphicsScene *scene = this->scenes->getScene(data);
+				if(scene == nullptr){
+					qDebug() << "Cliplist::ItemSelected Slot:" << "PreviewScene::getScene() QGraphicsScene *scene is nullptr";
+					scene = this->errorScene;
 				}
-				if(newHistorySize < historySize){
-					int answer = QMessageBox::question(this, QApplication::applicationDisplayName(),
-													   tr("The size inputed is smaller than before, the extra oldest history data will be removed.\n"
-														  "You can save the list before resize history data.\n"
-														  "Proceed?"), QMessageBox::Yes, QMessageBox::Cancel);
-					if(answer != QMessageBox::Yes){
-						return;
-					}
-				}
-				this->clipHelper->setHistorySize(newHistorySize);
-				this->statusBar()->showMessage(tr("History size set to %1.").arg(newHistorySize));
-			});
+				this->preview->setScene(scene);
+			}
+		});
 
-			this->menuBar()->addMenu(editMenu);
-		}
+		// 列表中复制
+		this->connect(this->clipList, &ClipList::copyToClipboard, [this](const ClipListItem *item){
+			if(item == nullptr){
+				qDebug() << "Cliplist::copyToClipboard Slot:" << "ClipListItem *item is nullptr";
+				return;
+			}
+			const ClipMimeData *data = item->getClipMimeData();
+			if(data == nullptr){
+				qDebug() << "Cliplist::copyToClipboard Slot:" << "ClipMimeData *data is nullptr";
+				return;
+			}
+			this->helper->copyToClipboard(data);
+			emit this->showTrayMessage(tr("Copied"), tr("Select data has been copied."), QSystemTrayIcon::Information, 5000);
+		});
 
-		QMenu *viewMenu = new QMenu(tr("&View"));{
-			this->showPreviewWindowAction->setCheckable(true);
-			this->connect(this->showPreviewWindowAction, &QAction::triggered, [this](bool checked){
-				this->previewWidget->setVisible(checked);
-				this->statusBar()->showMessage(tr("Preview window %1.").arg(checked ? tr("open") : tr("closed")));
-			});
-			viewMenu->addAction(showPreviewWindowAction);
-
-			this->closeAsExitAction->setCheckable(true);
-			this->closeAsExitAction->setChecked(this->closeAsExit);
-			this->connect(this->closeAsExitAction, &QAction::triggered, [this](bool checked){
-				this->closeAsExit = checked;
-				if(this->closeAsExit){
-					this->statusBar()->showMessage(tr("Program will closed when window closed."));
-				}else{
-					this->statusBar()->showMessage(tr("Program run background when window closed."));
-				}
-			});
-			viewMenu->addAction(closeAsExitAction);
-
-			this->menuBar()->addMenu(viewMenu);
-		}
-
-		QMenu *aboutMenu = new QMenu(tr("&About"));{
-			aboutMenu->addAction(tr("&About"), [this](){
-				qDebug() << "about";
-			});
-
-			aboutMenu->addAction(tr("About &Qt..."), [](){
-				qApp->aboutQt();
-			});
-			this->menuBar()->addMenu(aboutMenu);
-		}
+		// 列表中删除
+		this->connect(this->clipList, &ClipList::remove, [this](const ClipListItem *item){
+			if(item == nullptr){
+				qDebug() << "Cliplist::remove Slot:" << "ClipListItem *item is nullptr";
+				return;
+			}
+			const ClipMimeData *data = item->getClipMimeData();
+			if(data == nullptr){
+				qDebug() << "Cliplist::remove Slot:" << "ClipMimeData *data is nullptr";
+				return;
+			}
+			QString id = data->getId();
+			if(!id.isEmpty()){
+				this->scenes->removeScene(id);
+			}
+		});
 	}
 public:
 	MainWindow(QWidget *parent = nullptr): QMainWindow(parent){
 		this->setupMenus();
 		this->setupWindow();
+		this->setupErrorScene();
+		this->setupClipList();
 
 		this->statusBar()->showMessage(tr("Ready."));
 	}
 	~MainWindow();
 
-public slots:
-//	void setWindowTitle(const QString &title){
-//		if(title.isEmpty()){
-//			QMainWindow::setWindowTitle(QApplication::applicationDisplayName());
-//		}else{
-//			QMainWindow::setWindowTitle(QApplication::applicationDisplayName() % " - " % title);
-//		}
-//	}
+signals:
+	void showTrayMessage(const QString &title, const QString &message, QSystemTrayIcon::MessageIcon icon, int timeout);
+
 };
 #endif // MAINWINDOW_H

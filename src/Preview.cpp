@@ -1,6 +1,8 @@
 #include "Preview.h"
 
 #include <QMouseEvent>
+#include <QWheelEvent>
+#include <QResizeEvent>
 #include <QScrollBar>
 
 void Preview::mousePressEvent(QMouseEvent *event){
@@ -36,6 +38,11 @@ void Preview::wheelEvent(QWheelEvent *event){
 		factor = 1 / factor;
 	}
 	this->scale(factor, factor);
+}
+
+void Preview::resizeEvent(QResizeEvent *event){
+	QGraphicsView::resizeEvent(event);
+	this->fitInView(this->sceneRect(), Qt::KeepAspectRatio);
 }
 
 

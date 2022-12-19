@@ -69,6 +69,11 @@ public:
 
 signals:
 	void clipModeChanged(QClipboard::Mode mode);
+
+public slots:
+	void copyToClipboard(ClipMimeData *data){
+		this->clipboard->setData(*data);
+	}
 };
 
 #endif // CLIPHELPER_H
