@@ -42,9 +42,9 @@ void MainWindow::setupMenus(){
 
 	QMenu *editMenu = new QMenu(tr("&Edit"));{
 		this->underMonitoringAction->setCheckable(true);
-		this->underMonitoringAction->setChecked(this->clipHelper->getEnable());
+		this->underMonitoringAction->setChecked(this->helper->getEnable());
 		this->connect(this->underMonitoringAction, &QAction::triggered, [this](bool checked){
-			this->clipHelper->setEnable(checked);
+			this->helper->setEnable(checked);
 			if(!checked){
 				this->setWindowTitle(tr("Monitoring Stopped"));
 			}else{
@@ -54,7 +54,8 @@ void MainWindow::setupMenus(){
 		editMenu->addAction(this->underMonitoringAction);
 
 		editMenu->addAction(tr("&Clear History"), [this](){
-			if(this->clipHelper->getHistoryCount() <= 0){
+			if(this->helper->getHistoryCount() <= 0){
+				this->statusBar()->showMessage(tr("There has no history in list."));
 				return;
 			}
 			int answer = QMessageBox::question(this, QApplication::applicationDisplayName(),
@@ -64,13 +65,13 @@ void MainWindow::setupMenus(){
 			if(answer != QMessageBox::Yes){
 				return;
 			}
-			this->clipHelper->clear();
+			this->helper->clear();
 			this->statusBar()->showMessage(tr("History cleared."));
 		});
 
 		editMenu->addAction(tr("&Set History size..."), [this](){
 			bool ok = false;
-			int historySize = this->clipHelper->getHistorySize();
+			int historySize = this->helper->getHistorySize();
 			int newHistorySize = QInputDialog::getInt(this, QApplication::applicationDisplayName(),
 													  tr("Please input max history size..."),
 													  historySize,
@@ -87,7 +88,7 @@ void MainWindow::setupMenus(){
 					return;
 				}
 			}
-			this->clipHelper->setHistorySize(newHistorySize);
+			this->helper->setHistorySize(newHistorySize);
 			this->statusBar()->showMessage(tr("History size set to %1.").arg(newHistorySize));
 		});
 

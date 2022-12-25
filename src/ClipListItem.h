@@ -13,8 +13,6 @@
 
 class ClipListItem : public QListWidgetItem
 {
-	Q_OBJECT
-
 	ClipMimeData data;
 public:
 	ClipListItem(int type = Type): QListWidgetItem(nullptr, type){
@@ -24,49 +22,34 @@ public:
 		this->setClipMimeData(data);
 	}
 
-	void setDefaultIcon(){
-		QPixmap pixmap(IconSize);
-		pixmap.fill(Qt::white);
-		Utils::drawIconPlaceholder(&pixmap, QPen(Qt::black));
-		this->setIcon(QIcon(pixmap));
-	}
+	void setDefaultIcon();
+	void setToIcon(const QImage &image);
+	void setToIcon(const QString &text);
+	void setToIcon(const QList<QUrl> &urls);
 
-	void setToIcon(const QImage &image){
-		QImage scaled = image.scaled(IconSize, Qt::KeepAspectRatioByExpanding);
-		scaled = scaled.copy(qAbs(image.width() - IconSize.width()) / 2, qAbs(image.height() - IconSize.height()) / 2, IconSize.width(), IconSize.height());
-		this->setIcon(QPixmap::fromImage(scaled));
-	}
-
-	void setToIcon(const QString &text){
-		QPixmap pixmap(IconSize);
-		QPainter p(&pixmap);
-		p.drawText(QRect(QPoint(0, 0), IconSize), Qt::AlignLeft, text);
-		p.end();
-		this->setIcon(pixmap);
-	}
-
-	void setToIcon(const QList<QUrl> &urls){
-		QPixmap pixmap(IconSize);
-		QStringList list;
-		for(const QUrl &url: urls){
-			list.append(url.toString());
-		}
-		QPainter p(&pixmap);
-		p.drawText(QPoint(0, 0), list.join('\n'));
-		p.end();
+	void setToText(){
+		this->setText(Utils::mimeValue(this->data));
 	}
 
 	void setClipMimeData(const ClipMimeData &data){
 		this->data = data;
-		QPixmap pixmap(IconSize);
-		pixmap.fill(Qt::white);
 		if(this->data.hasImage()){
-			this->setToIcon(this->data.imageData());
+			QImage image = qvariant_cast<QImage>(this->data.imageData());
+			this->setToIcon(image);
+		}else if(this->data.hasUrls()){
+			this->setToIcon(this->data.urls());
+		}else if(this->data.hasText()){
+			this->setToIcon(this->data.text());
+		}else if(this->data.hasHtml()){
+			this->setToIcon(this->data.html());
+		}else{
+			this->setDefaultIcon();
 		}
+		this->setToText();
 	}
 
-	const ClipMimeData* const getClipMimeData() const{
-		return &this->data;
+	ClipMimeData* getClipMimeData(){
+		return &(this->data);
 	}
 };
 

@@ -29,10 +29,6 @@ class MainWindow : public QMainWindow
 
 	ClipHelper *helper = new ClipHelper(this->clipList, this->preview, this);
 
-	// Can be singleton
-	PreviewScene *scenes = new PreviewScene(this);
-	QGraphicsScene *errorScene = new QGraphicsScene(this);
-
 	QDockWidget *previewWidget = new QDockWidget(tr("Preview"), this);
 
 	QAction *showPreviewWindowAction = new QAction(tr("Show &Preview Window"), this);
@@ -54,73 +50,15 @@ class MainWindow : public QMainWindow
 
 	void setupWindow();
 	void setupMenus();
-
-	void setupErrorScene(){
-		QFont font = QApplication::font();
-		font.setPointSize(32);
-		this->errorScene->addText(tr("Cannot display description."), font);
-	}
-
-	void setupClipList(){
-		// 列表中选择
-		this->connect(this->clipList, &ClipList::itemSelected, [this](const ClipListItem *item){
-			if(this->preview->isVisible()){
-				if(item == nullptr){
-					qDebug() << "Cliplist::ItemSelected Slot:" << "ClipListItem *item is nullptr";
-					return;
-				}
-				const ClipMimeData *data = item->getClipMimeData();
-				if(data == nullptr){
-					qDebug() << "Cliplist::ItemSelected Slot:" << "ClipMimeData *data is nullptr";
-					return;
-				}
-				QGraphicsScene *scene = this->scenes->getScene(data);
-				if(scene == nullptr){
-					qDebug() << "Cliplist::ItemSelected Slot:" << "PreviewScene::getScene() QGraphicsScene *scene is nullptr";
-					scene = this->errorScene;
-				}
-				this->preview->setScene(scene);
-			}
-		});
-
-		// 列表中复制
-		this->connect(this->clipList, &ClipList::copyToClipboard, [this](const ClipListItem *item){
-			if(item == nullptr){
-				qDebug() << "Cliplist::copyToClipboard Slot:" << "ClipListItem *item is nullptr";
-				return;
-			}
-			const ClipMimeData *data = item->getClipMimeData();
-			if(data == nullptr){
-				qDebug() << "Cliplist::copyToClipboard Slot:" << "ClipMimeData *data is nullptr";
-				return;
-			}
-			this->helper->copyToClipboard(data);
-			emit this->showTrayMessage(tr("Copied"), tr("Select data has been copied."), QSystemTrayIcon::Information, 5000);
-		});
-
-		// 列表中删除
-		this->connect(this->clipList, &ClipList::remove, [this](const ClipListItem *item){
-			if(item == nullptr){
-				qDebug() << "Cliplist::remove Slot:" << "ClipListItem *item is nullptr";
-				return;
-			}
-			const ClipMimeData *data = item->getClipMimeData();
-			if(data == nullptr){
-				qDebug() << "Cliplist::remove Slot:" << "ClipMimeData *data is nullptr";
-				return;
-			}
-			QString id = data->getId();
-			if(!id.isEmpty()){
-				this->scenes->removeScene(id);
-			}
-		});
-	}
 public:
 	MainWindow(QWidget *parent = nullptr): QMainWindow(parent){
 		this->setupMenus();
 		this->setupWindow();
-		this->setupErrorScene();
-		this->setupClipList();
+
+		// Signal to signal
+		this->connect(this->helper, &ClipHelper::showTrayMessage, [this](const QString &title, const QString &message, QSystemTrayIcon::MessageIcon icon, int timeout){
+			emit this->showTrayMessage(title, message, icon, timeout);
+		});
 
 		this->statusBar()->showMessage(tr("Ready."));
 	}

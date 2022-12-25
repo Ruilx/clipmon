@@ -5,6 +5,8 @@
 #include <QResizeEvent>
 #include <QScrollBar>
 
+#include <QDebug>
+
 void Preview::mousePressEvent(QMouseEvent *event){
 	if(event->buttons() & Qt::LeftButton){
 		this->mouseMovePressed = true;
@@ -42,7 +44,7 @@ void Preview::wheelEvent(QWheelEvent *event){
 
 void Preview::resizeEvent(QResizeEvent *event){
 	QGraphicsView::resizeEvent(event);
-	this->fitInView(this->sceneRect(), Qt::KeepAspectRatio);
+	//this->fitInView(this->sceneRect(), Qt::KeepAspectRatio);
 }
 
 

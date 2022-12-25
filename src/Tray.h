@@ -46,7 +46,7 @@ class Tray : public QObject
 		this->tray->setContextMenu(this->menu);
 	}
 public:
-	Tray(QMainWindow *mainWindow, QObject *parent = nullptr): QObject(parent){
+	Tray(MainWindow *mainWindow, QObject *parent = nullptr): QObject(parent){
 		this->mainWindow = mainWindow;
 		this->setupTray();
 		this->setupPopupMenu();

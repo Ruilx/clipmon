@@ -17,6 +17,8 @@ public:
 
 	static QString mimeDesc(const ClipMimeData &d);
 
+	static QString mimeValue(const ClipMimeData &d);
+
 	static bool isImageMimetype(const QString &format){
 		if(format.startsWith("image/")){
 			return true;
@@ -102,7 +104,7 @@ public:
 			size /= unit;
 			index ++;
 		}
-		return QString::number(size, 'g', 2) % QString(table[index]);
+		return QString::number(size, 'f', 2) % QString(table[index]);
 	}
 };
 

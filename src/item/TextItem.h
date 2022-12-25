@@ -38,6 +38,8 @@ public:
 		QFont font = QApplication::font();
 		font.setPointSize(12);
 		this->item->setFont(font);
+
+		this->item->setPos(0, this->title->boundingRect().height());
 	}
 
 

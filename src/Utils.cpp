@@ -67,3 +67,45 @@ QString Utils::mimeDesc(const ClipMimeData &d){
 	}
 	return result;
 }
+
+QString Utils::mimeValue(const ClipMimeData &d){
+	int line = 0;
+	static const int maxline = 4;
+	QStringList results;
+	QStringList formats = d.formats();
+	for(const QString &format: formats){
+		if(line >= maxline){
+			break;
+		}
+		if(Utils::isTextMimetype(format)){
+			QString text = QString::fromUtf8(d.data(format));
+			if(text.length() > 100){
+				text = text.left(100).append("...");
+			}
+			results.append(QObject::tr("[Text (%1)] ").arg(format) % text.replace('\n', "\\n"));
+			line++;
+			continue;
+		}
+		if(Utils::isImageMimetype(format)){
+			QString text;
+			if(d.hasImage()){
+				QImage image = qvariant_cast<QImage>(d.imageData());
+				text.append(QObject::tr("Size: %1x%2 Format: %3").arg(image.width()).arg(image.height()).arg(Utils::imageFormat(image.format())));
+			}else{
+				text.append(QObject::tr("Size: %1").arg(Utils::formatNumber(d.data(format).length())));
+			}
+			results.append(QObject::tr("[Image (%1)] ").arg(format) % text);
+			line++;
+			continue;
+		}
+
+		// others
+		results.append(QObject::tr("[%1] ").arg(format) % QObject::tr("Size: %1").arg(Utils::formatNumber(d.data(format).length())));
+		line++;
+	}
+	if(results.isEmpty()){
+		return QObject::tr("[Empty]");
+	}else{
+		return results.join('\n');
+	}
+}

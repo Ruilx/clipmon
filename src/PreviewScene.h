@@ -8,6 +8,8 @@
 #include <QHash>
 #include <QUuid>
 
+#include <QDebug>
+
 #include <src/ClipMimeData.h>
 
 #include <src/item/TextItem.h>
@@ -21,9 +23,7 @@ class PreviewScene : public QObject
 
 	QHash<QString, QGraphicsScene*> scenes;
 public:
-	explicit PreviewScene(QObject *parent = nullptr) : QObject{parent}{
-
-	}
+	explicit PreviewScene(QObject *parent = nullptr) : QObject{parent}{}
 
 	~PreviewScene(){
 		for(QHash<QString, QGraphicsScene*>::Iterator iterator = this->scenes.begin(); iterator != this->scenes.end(); iterator++){
@@ -42,14 +42,17 @@ public:
 		}
 	}
 
-	const QGraphicsScene *getScene(const ClipMimeData *mimeData){
+	QGraphicsScene *getScene(ClipMimeData *mimeData){
 		if(mimeData == nullptr){
-			return;
+			qDebug() << "PreviewScene::getScene(): mimeData is nullptr.";
+			return nullptr;
 		}
 		QString id = mimeData->getId();
 		if(id.isEmpty() || !this->scenes.contains(id)){
-			QString uuid = QUuid::createUuid().toString();
-			this->scenes.insert(uuid, this->genScene(mimeData, uuid));
+			QString uuid = QUuid::createUuid().toString(QUuid::WithoutBraces);
+			this->scenes.insert(uuid, this->genScene(mimeData));
+			mimeData->setId(uuid);
+			id = uuid;
 		}
 		return this->scenes.value(id, nullptr);
 	}
@@ -61,9 +64,12 @@ public:
 		if(this->scenes.contains(id)){
 			QGraphicsScene *scene = this->scenes.take(id);
 			if(scene == nullptr){
+				qDebug() << "Scene:" << id << "not found in scenes.";
 				return;
 			}
-			for(QGraphicsView *view: scene->views()){
+			QList<QGraphicsView *> views = scene->views();
+			qDebug() << "Scene:" << id << "has attached" << views.length() << "views.";
+			for(QGraphicsView *view: views){
 				if(view != nullptr){
 					view->setScene(nullptr);
 				}
@@ -71,11 +77,18 @@ public:
 			// scene will take its all items ownership.
 			// @see void QGraphicsScene::addItem(QGraphicsItem *item)
 			delete scene;
+			qDebug() << "Scene:" << id << "has deleted.";
+		}
+	}
+
+	void clear(){
+		for(const QString &key: this->scenes.keys()){
+			this->removeScene(key);
 		}
 	}
 
 protected:
-	void genScene(const ClipMimeData *mimeData, const QString &uuid){
+	QGraphicsScene *genScene(const ClipMimeData *mimeData){
 		static const QStringList mimeTypes = {"text/plain", "text/html"};
 		static const QStringList mimeTypesPrefix = {"image"};
 		int startY = 0;
@@ -125,6 +138,7 @@ private:
 				return format;
 			}
 		}
+		return "";
 	}
 
 signals:

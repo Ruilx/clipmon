@@ -51,6 +51,8 @@ public:
 			p.end();
 		}
 		this->item->setPixmap(transformed);
+
+		this->item->setPos(0, this->title->boundingRect().height());
 	}
 };
 
