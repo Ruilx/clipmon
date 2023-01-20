@@ -40,8 +40,8 @@ public:
 
 	void setTitle(const QString &title){
 		QString t;
-		if(title.length() > 100){
-			t = title.left(100) + "...";
+		if(title.length() > 512){
+			t = title.left(512) + "...";
 		}else{
 			t = title;
 		}
